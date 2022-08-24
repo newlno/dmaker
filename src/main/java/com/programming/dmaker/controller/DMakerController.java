@@ -2,23 +2,21 @@ package com.programming.dmaker.controller;
 
 import com.programming.dmaker.dto.request.DMakerRequestDto;
 import com.programming.dmaker.dto.response.ResponseDto;
-import org.springframework.web.bind.annotation.GetMapping;
+import com.programming.dmaker.service.DMakerService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 
+@RequiredArgsConstructor
 @RestController
 public class DMakerController {
 
-    @GetMapping("/developers")
-    public List<String> getAllDevelopers() {
-
-    }
+    private final DMakerService dMakerService;
 
     @PostMapping("/developers")
-    public ResponseDto<?> createDeveloper (@RequestBody DMakerRequestDto requestBody) {
-
+    public ResponseDto<?> createDeveloper(@RequestBody DMakerRequestDto requestBody) {
+        return dMakerService.createDeveloper(requestBody);
     }
 }

@@ -16,4 +16,18 @@ public enum DeveloperLevel {
 
     private final String description;
 
+    public static DeveloperLevel setDeveloperLevel(Long experienceYears) {
+        if (experienceYears > 10) {
+            return DeveloperLevel.LEAD;
+        } else if (experienceYears > 7) {
+            return DeveloperLevel.SENIOR;
+        } else if (experienceYears > 5) {
+            return DeveloperLevel.MID;
+        } else if (experienceYears > 2) {
+            return DeveloperLevel.JUNIOR;
+        } else {
+            return DeveloperLevel.NEW;
+        }
+    }
+
 }

@@ -2,8 +2,10 @@ package com.programming.dmaker.service;
 
 import com.programming.dmaker.dto.request.DeveloperRequestDto;
 import com.programming.dmaker.dto.response.AllDeveloperResponseDto;
+import com.programming.dmaker.dto.response.DeveloperResponseDto;
 import com.programming.dmaker.dto.response.ResponseDto;
 import com.programming.dmaker.entity.Developer;
+import com.programming.dmaker.exception.AllExceptionNaming;
 import com.programming.dmaker.repository.DeveloperRepository;
 import com.programming.dmaker.type.DeveloperLevel;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,7 +25,7 @@ public class DeveloperService{
     @Transactional
     public ResponseDto<?> createDeveloper(DeveloperRequestDto requestDto) {
         Developer developer = Developer.builder()
-                .developerLevel(setDeveloperLevel(requestDto.getExperienceYears()))
+                .developerLevel(DeveloperLevel.setDeveloperLevel(requestDto.getExperienceYears()))
                 .age(requestDto.getAge())
                 .name(requestDto.getName())
                 .skill(requestDto.getSkill())
@@ -38,7 +41,36 @@ public class DeveloperService{
         return ResponseDto.success(allDeveloperDtoList);
     }
 
+    @Transactional(readOnly = true)
+    public ResponseDto<?> getDeveloper (Long developerId) {
+        Developer developer = isPresentDev(developerId);
+        if (developer == null) {
+            return ResponseDto.fail(AllExceptionNaming.CANNOT_FIND_DEV);
+        }
+        return ResponseDto.success(developerResponseDtobuilder(developer));
+    }
 
+    @Transactional
+    public ResponseDto<?> updateDeveloper (Long developerId,
+                                           DeveloperRequestDto requestDto){
+        Developer developer = isPresentDev(developerId);
+        if (developer == null) {
+            return ResponseDto.fail(AllExceptionNaming.CANNOT_FIND_DEV);
+        }
+        developer.updateDeveloper(requestDto);
+        developerRepository.save(developer);
+        return ResponseDto.success(developerResponseDtobuilder(developer));
+    }
+
+    @Transactional
+    public ResponseDto<?> deleteDeveloper(Long developerId){
+        Developer developer = isPresentDev(developerId);
+        if (developer == null) {
+            return ResponseDto.fail(AllExceptionNaming.CANNOT_FIND_DEV);
+        }
+        developerRepository.delete(developer);
+        return ResponseDto.success(developerId + DELETE_DEV);
+    }
 
 
 
@@ -52,26 +84,28 @@ public class DeveloperService{
                     .name(developer.getName())
                     .age(developer.getAge())
                     .skill(developer.getSkill())
-                    .experienceYears(developer.getExperienceYears())
                     .build();
             allDeveloperDtoList.add(allDeveloperResponseDto);
         }
         return allDeveloperDtoList;
     }
 
-
-
-    public DeveloperLevel setDeveloperLevel(Long experienceYears) {
-        if (experienceYears > 10) {
-            return DeveloperLevel.LEAD;
-        } else if (experienceYears > 7) {
-            return DeveloperLevel.SENIOR;
-        } else if (experienceYears > 5) {
-            return DeveloperLevel.MID;
-        } else if (experienceYears > 2) {
-            return DeveloperLevel.JUNIOR;
-        } else {
-            return DeveloperLevel.NEW;
-        }
+    @Transactional(readOnly = true)
+    public Developer isPresentDev(Long id) {
+        Optional<Developer> optionalDeveloper = developerRepository.findById(id);
+        return optionalDeveloper.orElse(null);
     }
+
+    public DeveloperResponseDto developerResponseDtobuilder(Developer developer){
+        return DeveloperResponseDto.builder()
+                .id(developer.getId())
+                .name(developer.getName())
+                .age(developer.getAge())
+                .skill(developer.getSkill())
+                .experienceYears(developer.getExperienceYears())
+                .developerLevel(DeveloperLevel.setDeveloperLevel(developer.getExperienceYears()))
+                .build();
+    }
+
+    public static final String DELETE_DEV = " 번 ID 개발자를 삭제했습니다.";
 }

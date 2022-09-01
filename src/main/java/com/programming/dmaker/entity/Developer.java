@@ -1,5 +1,6 @@
 package com.programming.dmaker.entity;
 
+import com.programming.dmaker.dto.request.DeveloperRequestDto;
 import com.programming.dmaker.type.DeveloperLevel;
 import lombok.*;
 
@@ -7,7 +8,6 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,7 +23,7 @@ public class Developer extends Timestamped {
 
     @NotBlank
     @Column(nullable = false)
-    private Integer experienceYears;
+    private Long experienceYears;
 
     @NotBlank
     @Column(nullable = false)
@@ -31,10 +31,17 @@ public class Developer extends Timestamped {
 
     @NotBlank
     @Column(nullable = false)
-    private Integer age;
+    private Long age;
 
     @NotBlank
     @Column(nullable = false)
     private String skill;
+
+    public void updateDeveloper(DeveloperRequestDto requestDto){
+        this.name = requestDto.getName();
+        this.age = requestDto.getAge();
+        this.skill = requestDto.getSkill();
+        this.experienceYears = requestDto.getExperienceYears();
+    }
 
 }

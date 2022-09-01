@@ -1,6 +1,5 @@
 package com.programming.dmaker.type;
 
-import com.programming.dmaker.entity.Developer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

@@ -7,9 +7,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class DMakerRequestDto {
+public class DeveloperRequestDto {
     private String name;
-    private Integer age;
-    private Integer experienceYears;
+    private Long age;
+    private Long experienceYears;
     private String skill;
 }
